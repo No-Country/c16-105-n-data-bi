@@ -34,6 +34,6 @@
 | :-----------:    | :-----------: | :------------------------------------------------: |:------------------------: |
 |Yazmani Reyes     | Data Engineer |[GitHub](https://github.com/YazmaniReyesH "GitHub") |[LinkedIn](https://www.linkedin.com/in/yazmani-reyes-hernandez/ "LinkedIn")|
 |Eglimar Ramirez   | Data Scientist|[GitHub](https://github.com/EglimarRamirez "GitHub")|[LinkedIn](https://www.linkedin.com/in/eglimar-mercedes-ram%C3%ADrez-ing/ "LinkedIn")
-|Ezequiel Angió    | Data Analy    |[GitHub](https://github.com/Eze-ar "GitHub")        |[LinkedIn](https://www.linkedin.com/in/ezeangio/ "LinkedIn")|
+|Ezequiel Angió    | Data Analyst  |[GitHub](https://github.com/Eze-ar "GitHub")      |[LinkedIn](https://www.linkedin.com/in/ezeangio/ "LinkedIn")|
 |Isabel Marquinez  | Analista de BI|[GitHub](https://github.com/Chavelax "GitHub")      |[LinkedIn](https://www.linkedin.com/in/~isabel-marquinez-425444121/ "LinkedIn")|
 
