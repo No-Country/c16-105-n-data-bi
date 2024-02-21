@@ -1,5 +1,5 @@
 <h2 align="center"> ANÁLISIS Y PREDICCIÓN DE DIABETES 📊 </h2>
-<h4 align="center"> Analizar la relación que tienen las variables para la determinación que un paciente este en riesgo o no de tener diabetes. </h4>
+<h4 align="center"> Analizar la relación que tienen las variables para la determinación si un paciente esta en riesgo o no de tener diabetes. </h4>
 
   **ACTIVIDADES:**
 -  **Ingeniería de datos:** 
