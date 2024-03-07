@@ -8,9 +8,9 @@
 Análisis exploratorio y estádistico de datos, limpieza e interpretación de los mismos. 
 
 -	**Ciencia de datos:**
-Desarrollo, prueba y validación de modelos de Machine Learning
-Aplicación de los modelos SVM, Árbol de decisión, Random Forest y Regresión Logistica
-Evaluación de los modelo para determinar cual de ellos ofrece mejores resultados de clasificación/predicción
+Desarrollo, prueba y validación de modelos de Machine Learning;
+Aplicación de los modelos SVM, Árbol de decisión, Random Forest y Regresión Logistica;
+Evaluación de los modelo para determinar cual de ellos ofrece mejores resultados de clasificación/predicción.
 
 -	**Visualización de datos:**
 Desarrollo de un Dashboard en donde se pueda visualizar de manera grafica e interactiva los resultados obtenidos del análisis y estudio del conjunto de datos **Diabetes Prediction**, previamente seleccionado para llevar a cabo este proyecto.
