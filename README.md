@@ -4,11 +4,16 @@
   **ACTIVIDADES:**
 -  **Ingeniería de datos:** 
 
--	**Análisis de datos:** 
+-	**Análisis de datos:**
+Análisis exploratorio y estádistico de datos, limpieza e interpretación de los mismos. 
 
 -	**Ciencia de datos:**
+Desarrollo, prueba y validación de modelos de Machine Learning
+Aplicación de los modelos SVM, Árbol de decisión, Random Forest y Regresión Logistica
+Evaluación de los modelo para determinar cual de ellos ofrece mejores resultados de clasificación/predicción
 
 -	**Visualización de datos:**
+Desarrollo de un Dashboard en donde se puede visualizar de manera grafica e interactiva los resultados obtenidos del análisis y estudio del conjunto de datos **Diabetes Prediction**, previamente seleccionado para llevar a cabo este proyecto.
 
 
 
@@ -32,8 +37,8 @@
 
 |    Nombre        |   Rol         |   GitHub                                           |    LinkedIn               |
 | :-----------:    | :-----------: | :------------------------------------------------: |:------------------------: |
-|Yazmani Reyes     | Data Engineer / Data Scientist |[GitHub](https://github.com/YazmaniReyesH "GitHub") |[LinkedIn](https://www.linkedin.com/in/yazmani-reyes-hernandez/ "LinkedIn")|
-|Eglimar Ramirez   | Data Scientist|[GitHub](https://github.com/EglimarRamirez "GitHub")|[LinkedIn](https://www.linkedin.com/in/eglimar-mercedes-ram%C3%ADrez-ing/ "LinkedIn")
-|Ezequiel Angió    | Data Analyst  |[GitHub](https://github.com/Eze-ar "GitHub")      |[LinkedIn](https://www.linkedin.com/in/ezeangio/ "LinkedIn")|
-|Isabel Marquinez  | Analista de BI|[GitHub](https://github.com/Chavelax "GitHub")      |[LinkedIn](https://www.linkedin.com/in/~isabel-marquinez-425444121/ "LinkedIn")|
+|Yazmani Reyes     | PM/Data Engineer/Machine Learning Developer|[GitHub](https://github.com/YazmaniReyesH "GitHub") |[LinkedIn](https://www.linkedin.com/in/yazmani-reyes-hernandez/ "LinkedIn")|
+|Eglimar Ramirez   | BI Analyst/ Machine Learning Developer|[GitHub](https://github.com/EglimarRamirez "GitHub")|[LinkedIn](https://www.linkedin.com/in/eglimar-mercedes-ram%C3%ADrez-ing/ "LinkedIn")
+|Ezequiel Angió    | Analyst & data scientist|[GitHub](https://github.com/Eze-ar "GitHub")      |[LinkedIn](https://www.linkedin.com/in/ezeangio/ "LinkedIn")|
+|Isabel Marquinez  | Data & BI Analyst|[GitHub](https://github.com/Chavelax "GitHub")      |[LinkedIn](https://www.linkedin.com/in/~isabel-marquinez-425444121/ "LinkedIn")|
 
