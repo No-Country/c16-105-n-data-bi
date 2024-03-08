@@ -1,0 +1,1699 @@
+---
+title: "PROYECTO NOCOUNTRY - DETECCION DE DIABETES"
+format: 
+  html:
+      theme: journal
+      toc: true
+      code-fold: true
+      code-tools: true
+editor: visual
+---
+
+# ANÁLISIS Y ESTADÍSTICA CON R Y PYTHON PARA LA CLASIFICACIÓN OPORTUNA DE PACIENTES CON DIABETES
+
+![](images/banner_diabetes.png)
+
+## Proyecto correspondiente al programa de No Country en la vertical de Data-BI
+
+Realizado por:
+
+-   Yazmani Reyes Hernandez
+-   Eglimar Ramirez
+-   Isabel Marquinez
+-   Adrián Ezequiel Angió
+
+En el presente trabajo se realiza un proyecto de principio a fin, asumiendo el rol de un científico de datos recientemente contratado en una empresa del sector salud, con el objetivo de determinar si un paciente tiene riesgo de tener diabletes o no mediante programación y estadística con R para el análisis de datos. Estos son los pasos principales a seguir:
+
+-   Observar el panorama general y entiender el problema.
+-   Obtener los datos.
+-   Descubrir y visualizar los datos para obtener información.
+-   Preparar los datos para los algoritmos de Machine Learning.
+-   Seleccionar algunos modelos y realizar los entrenamientos (train).
+-   Afinar/ajustar (fine tune) los modelos.
+-   Presentar una solución.
+
+## 1. Observar el panorama general y entiender el problema.
+
+### Caso de estudio: Diagnóstico de Diabetes
+
+![](images/diabetes1.png)
+
+La diabetes, una enfermedad crónica caracterizada por niveles elevados de glucosa en la sangre, ha emergido como un desafío de salud global con consecuencias significativas. Afectando a personas de todas las edades, géneros y grupos étnicos, la diabetes tiene un impacto sustancial en la calidad de vida y aumenta el riesgo de complicaciones graves como enfermedades cardíacas, accidentes cerebrovasculares y daño renal. Según la Federación Internacional de Diabetes (IDF), aproximadamente 537 millones de personas vivían con diabetes en 2021, y se proyecta que esta cifra alcance los 643 millones para 2030. Este aumento alarmante se asocia con factores como el envejecimiento de la población, cambios en los estilos de vida, y la prevalencia de la obesidad. La diabetes no solo representa una carga considerable para los sistemas de atención médica, sino que también incide en la productividad económica y la calidad de vida de las personas en todo el mundo. La conciencia, la prevención y la gestión efectiva de la diabetes son imperativas para abordar este creciente desafío de salud pública a escala global.
+
+### Problemática
+
+A través del análisis de los datos se identificarán factores de riesgos que están asociados la enfermedad de la diabetes como la edad, hipertensión, niveles de glucosa en sangre, el hábito de fumar, cardiopatía, entre otras variables con la finalidad de ayudar al profesional de la salud a identificar si en un paciente existe el riesgo de tener diabetes.
+
+### Hipótesis Central
+
+La hipótesis principal del estudio es que la obesidad conduce a un mayor riesgo de desarrollar diabetes. Esta hipótesis se evalúa en el contexto del modelo predictivo, con especial atención al papel del índice de masa corporal (BMI) y su interacción con otras variables.
+
+#### Hipótesis y Preguntas de Investigación Adicionales
+
+-   Interacción entre BMI y Edad: ¿El riesgo de diabetes varía con la edad dependiendo del BMI?
+-   Relevancia de la Glucosa en Sangre: ¿Los niveles de glucosa en sangre son más predictivos que el BMI?
+-   Variaciones por Grupos de Edad: ¿La prevalencia de diabetes cambia entre diferentes grupos de edad?
+-   Factores de Riesgo Combinados: ¿Cómo afectan los factores combinados la probabilidad de diabetes?
+-   Diferencias de Género: ¿Hay diferencias significativas en los factores de riesgo o tasas de diabetes entre géneros?
+
+#### Preguntas de Investigación Específicas
+
+-   Influencia de la Hipertensión: ¿Cómo afecta la hipertensión al riesgo de diabetes?
+-   Impacto de la Enfermedad Cardíaca: ¿Cuál es el efecto de las enfermedades cardíacas en el riesgo de diabetes?
+-   Relación con el Historial de Fumar: ¿El fumar está asociado con un cambio en el riesgo de diabetes?
+-   Predicción con Niveles de HbA1c: ¿Son los niveles de HbA1c un indicador fuerte de diabetes?
+
+### Metodolgía
+
+El proyecto utiliza técnicas estadísticas avanzadas y análisis de datos para probar las hipótesis y responder a las preguntas de investigación. Se construye un modelo de regresión logística para predecir la probabilidad de diabetes, integrando el análisis de interacciones entre variables y evaluando la importancia predictiva de cada factor.
+
+### Importancia del estudio
+
+El desarrollo de un modelo predictivo eficaz para la diabetes es crucial para la identificación temprana de individuos en riesgo y para la implementación de estrategias preventivas. Este estudio contribuye al entendimiento de cómo diversos factores biológicos y de estilo de vida interactúan en la génesis de la diabetes, ofreciendo así un marco para futuras investigaciones y aplicaciones en salud pública.
+
+## 2. Obtención y Descripción del conjunto de datos
+
+El conjunto de datos de predicción de la diabetes es una recopilación de datos médicos y demográficos de los pacientes, junto con su estado de diabetes (positivo o negativo). Los datos incluyen características como edad, sexo, índice de masa corporal (IMC), hipertensión, enfermedades cardíacas, antecedentes de tabaquismo, nivel de HbA1c y nivel de glucosa en sangre. Este conjunto de datos se puede utilizar para crear modelos de aprendizaje automático para predecir la diabetes en pacientes en función de su historial médico y su información demográfica. Esto puede resultar útil para los profesionales de la salud a la hora de identificar pacientes que pueden estar en riesgo de desarrollar diabetes y desarrollar planes de tratamiento personalizados. Además, los investigadores pueden utilizar el conjunto de datos para explorar las relaciones entre diversos factores médicos y demográficos y la probabilidad de desarrollar diabetes.
+
+El dataset utilizado esta disponible de forma pública en el portal web de Kaggle, la fuente es la siguiente: https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset
+
+Estas son las características incluidas en el dataset seleccionado: El conjunto de datos incluye las siguientes variables relevantes para el proyecto:
+
+-   gender: Género del paciente.
+-   age: Edad del paciente en años.
+-   hypertension: Presencia o ausencia de hipertensión.
+-   heart_disease: Presencia o ausencia de enfermedades cardíacas.
+-   smoking_history: Historial de tabaquismo del paciente.
+-   HbA1c_level: Nivel de hemoglobina glicosilada.
+-   blood_glucose_level: Nivel de glucosa en sangre.
+-   diabetes: Diagnóstico de diabetes (variable de resultado).
+
+```{r}
+library(reticulate)
+os <- import("os")
+os$listdir(".")
+
+library(dplyr)
+# Cargamos el archivo 'diabetes_dataset.csv' en un dataframe
+df <- read.csv('diabetes_dataset.csv')
+head(df)
+```
+
+## 3. Descubrir y visualizar los datos para obtener información.
+
+### Análisis exploratorio inicial
+
+```{r}
+# Mostrar las columnas del dataframe
+print(names(df))
+```
+
+-   El género (gender) se refiere al sexo biológico del individuo, que puede tener un impacto en su susceptibilidad a la diabetes. Hay tres categorías: masculino, femenino y otras.
+
+-   La edad (age) es un factor importante ya que la diabetes se diagnostica con mayor frecuencia en adultos mayores. La edad oscila entre 0 y 80 años en nuestro conjunto de datos.
+
+-   La hipertensión (hypertension) es una afección médica en la que la presión arterial en las arterias está elevada persistentemente. Tiene valores 0 o 1 donde 0 indica que no tiene hipertensión y 1 significa que tiene hipertensión.
+
+-   La enfermedad cardíaca (heart_disease) es otra condición médica que se asocia con un mayor riesgo de desarrollar diabetes. Tiene valores 0 o 1 donde 0 indica que no tienen enfermedad cardíaca y 1 significa que tienen enfermedad cardíaca.
+
+-   El historial de tabaquismo (smoking_history) también se considera un factor de riesgo para la diabetes y puede exacerbar las complicaciones asociadas con la diabetes. En nuestro conjunto de datos tenemos 6 categorías: no actualmente, anteriormente, sin información, actualmente, nunca y jamás.
+
+-   El IMC (índice de masa corporal) (bmi) es una medida de la grasa corporal basada en el peso y la altura. Los valores más altos de IMC están relacionados con un mayor riesgo de diabetes. El rango de IMC en el conjunto de datos es de 10.16 a 71.55. Un IMC inferior a 18.5 indica bajo peso, entre 18.5 y 24.9 es normal, entre 25 y 29.9 indica sobrepeso y 30 o más indica obesidad.
+
+-   El nivel de HbA1c (hemoglobina A1c) (HbA1c_level) es una medida del nivel promedio de azúcar en sangre de una persona durante los últimos 2 o 3 meses. Los niveles más altos indican un mayor riesgo de desarrollar diabetes. En su mayoría, más del 6.5% del nivel de HbA1c indica diabetes.
+
+-   El nivel de glucosa en sangre (blood_glucose_level) se refiere a la cantidad de glucosa en el torrente sanguíneo en un momento dado. Los niveles altos de glucosa en sangre son un indicador clave de diabetes.
+
+-   La diabetes (diabetes) es la variable objetivo que se predice, donde los valores de 1 indican la presencia de diabetes y 0 indican la ausencia de diabetes.
+
+```{r}
+# Contamos el numero de Hombres y Mujeres en el dataset
+conteo_genero <- table(df$gender)
+print(conteo_genero)
+```
+
+```{r}
+# Contamos el numero de valores para cada opcion en el historial de tabaquismo del dataset
+conteo_smoking_history <- table(df$smoking_history)
+print(conteo_smoking_history)
+```
+
+```{r}
+# Mostrar las primeras filas del dataframe
+print(head(df, 10))
+```
+
+```{r}
+# Mostrar la cantidad de filas y columnas en el dataframe
+print(dim(df))
+```
+
+```{r}
+# Mostrar la información del dataframe
+print(str(df))
+```
+
+```{r}
+# Mostrar el Resumen estadístico del dataframe
+print(summary(df))
+```
+
+```{r}
+# Comprobando valores faltantes en el dataframe
+missing_values <- colSums(is.na(df))
+print("\nValores Faltantes en el Conjunto de Datos:")
+print(missing_values)
+```
+
+### Generación de Histogramas
+
+Un histograma es una herramienta poderosa y versátil para explorar la distribución de datos, identificar patrones, outliers y entender la variabilidad en un conjunto de datos. Su utilidad radica en proporcionar una representación visual que facilita la interpretación de la estructura y las características de los datos.
+
+En la figura inferior podemos visualizar como se comporta la distribucion de los datos de cada variable en nuestro dataset, como se aprecia, tenemos algunas variables binarias como "hypertension", "heart-disease" y "diabetes", y tambien hay variables como "age", "bmi", "HbA1c_level" y "blood_glucose_level" cuya distribucion de datos no parece tender a la normalidad, ya que en estas variables los datos tienen picos altos y bajos, que no parecen comportarse con algun tipo de patron fijo.
+
+```{r}
+# Generando los histogramas de las variables del dataframe
+par(mfrow=c(3, 3))  # Configurar diseño de subgráficos
+hist(df$age, main="Histograma age", xlab="age", col="lightblue")
+hist(df$hypertension, main="Histograma hypertension", xlab="hypertension", col="lightgreen")
+hist(df$heart_disease, main="Histograma heart_disease", xlab="heart_disease", col="lightgreen")
+hist(df$bmi, main="Histograma bmi", xlab="bmi", col="lightgreen")
+hist(df$HbA1c_level, main="Histograma HbA1c_level", xlab="HbA1c_level", col="lightgreen")
+hist(df$blood_glucose_level, main="Histograma blood_glucose_level", xlab="blood_glucose_level", col="lightgreen")
+hist(df$diabetes, main="Histograma diabetes", xlab="diabetes", col="lightgreen")
+# Repite para otras columnas según sea necesario
+```
+
+### Distribucion de las clases en el Dataframe
+
+A continuacion hacemos un analisis de la distribucion de las clases en el dataframe, con esto podemos saber el porcentaje de pacientes que cumplen con cierta caracteristica, y despues generamos una grafica en la que podemos ver la tendencia de la distribucion de los daros la cual se refleja de acuerdo al comportamiento que ya observamos antes en los histogramas.
+
+Algo muy importante que podemos notar, es que hay un mayor numero de pacientes sin diabetes con respecto al numero de pacientes con diabetes, es decir, no estan balanceados los datos en esta variable, y lo mismo sucede con otras variables como la hipertension y las enfermedades cardiacas.
+
+```{r}
+# Comprobando la distribución de las clases en el dataframe
+# Aquí podemos ver cómo están distribuidos los datos en la variable objetivo, ya que es una variable binaria, podemos ver cuál es el porcentaje de pacientes con y sin diabetes.
+class_distribution <- table(df$diabetes) / nrow(df)
+cat("\nDistribución de la Clase Objetivo (Diabetes):\n")
+print(class_distribution)
+```
+
+```{r}
+# Comprobando la distribución de las clases en el dataframe
+# Aquí podemos ver cómo están distribuidos los datos en la variable gender, podemos ver cuál es el porcentaje de pacientes hombres y mujeres en el dataset.
+class_distribution_gender <- table(df$gender) / nrow(df)
+cat("\nDistribución de la Clase 'gender':\n")
+print(class_distribution_gender)
+```
+
+```{r}
+# Comprobando la distribución de las clases en el dataframe
+# Aquí podemos ver cómo están distribuidos los datos en la variable hypertension, ya que es una variable binaria, podemos ver cuál es el porcentaje de pacientes con y sin hipertensión.
+class_distribution_hypertension <- table(df$hypertension) / nrow(df)
+cat("\nDistribución de la Clase 'hypertension':\n")
+print(class_distribution_hypertension)
+```
+
+```{r}
+# Comprobando la distribución de las clases en el dataframe
+# Aquí podemos ver cómo están distribuidos los datos en la variable heart_disease, ya que es una variable binaria, podemos ver cuál es el porcentaje de pacientes con y sin enfermedad cardíaca.
+class_distribution_heart_disease <- table(df$heart_disease) / nrow(df)
+cat("\nDistribución de la Clase 'heart_disease':\n")
+print(class_distribution_heart_disease)
+```
+
+```{r}
+# Comprobando la distribución de las clases en el dataframe
+# Aquí podemos ver cómo están distribuidos los datos en la variable smoking_history, podemos ver cuál es el porcentaje de pacientes con un historial de tabaquismo.
+class_distribution_smoking_history <- table(df$smoking_history) / nrow(df)
+cat("\nDistribución de la Clase 'smoking_history':\n")
+print(class_distribution_smoking_history)
+```
+
+```{r}
+# Creando las visualizaciones de las distribuciones en las variables del dataframe
+par(mfrow=c(3, 2))  # Configurar diseño de subgráficos
+hist(df$age, main="Age Distribution", xlab="Age", col="lightblue", breaks=30)
+hist(df$bmi, main="BMI Distribution", xlab="BMI", col="lightgreen", breaks=30)
+hist(df$blood_glucose_level, main="Blood Glucose Level Distribution", xlab="Blood Glucose Level", col="lightcoral", breaks=30)
+hist(df$HbA1c_level, main="HbA1c Level Distribution", xlab="HbA1c Level", col="lightyellow", breaks=30)
+hist(df$hypertension, main="Hypertension Distribution", xlab="Hypertension", col="lightpink", breaks=30)
+hist(df$heart_disease, main="Heart Disease Distribution", xlab="Heart Disease", col="lightcyan", breaks=30)
+```
+
+### Boxplot de las características en el dataframe
+
+Generar un boxplot (o diagrama de caja) para cada una de las variables de un DataFrame es una práctica común en el análisis exploratorio de datos. El boxplot proporciona información valiosa sobre la distribución y la variabilidad de cada variable. Algunas razones por las cuales generar un boxplot puede ser beneficioso son:
+
+-   Visualización de la Distribución
+-   Visualización de la Distribución
+-   Comparación de Distribuciones
+-   Centralidad y Dispersión
+-   Resumen de Estadísticas Descriptivas
+-   Facilita la Detección de Asimetrías
+
+En la Figura inferior podemos ver una comparacion general de cada uno de los boxplot de las variables del dataset, en el podemos ver que evidentemente para las variables "hypertension", "heart_disease" y "diasbetes" es complicado ver algun tipo de comportamiento ya que se trata de variables binarias. En el caso de las variables "bmi" y "blood_glucose_level" podemos ve algunos valores atipicos que quedan fuera de los quantiles.
+
+```{r}
+# Seleccionar solo columnas numéricas
+numeric_columns <- sapply(df, is.numeric)
+numeric_df <- df[, numeric_columns]
+
+# Generar Boxplot General para cada variable del dataset
+boxplot(numeric_df, col="lightblue", main="Boxplot de cada característica del dataset", cex.main=1.2)
+```
+
+### Tablas de contingencia y pruebas de chi cuadrado
+
+Las tablas de contingencia son una herramienta importante en estadística descriptiva para analizar la relación entre dos variables. Estas tablas resumen la distribución conjunta de frecuencias de las dos variables y facilitan la identificación de patrones y asociaciones. Las tablas de contingencia pueden incluir porcentajes relativos a las frecuencias conjuntas o marginales. Esto ayuda a interpretar la proporción de casos en cada combinación. Al observar las frecuencias conjuntas y marginales, puedes identificar si hay una asociación entre las dos variables. Una asociación implica que las frecuencias no son independientes entre sí. Las tablas de contingencia son fundamentales para realizar pruebas de independencia, como la prueba de chi-cuadrado. Estas pruebas determinan si las dos variables son independientes o si hay una relación significativa entre ellas.
+
+Tambien se realizaron pruebas de chi-cuadrado para poder determinar si existe una asociacion significativa entre las variables en una tabla de contingencia. En este caso, la hipótesis nula (H0) es que las dos variables son independientes, mientras que la hipótesis alternativa (H1) sugiere que hay una asociación significativa. Es importante señalar que la prueba de chi-cuadrado tiene algunas limitaciones, como la sensibilidad a tamaños de muestra grandes y la dependencia de la elección de categorías. Además, proporciona información sobre la existencia de asociación, pero no sobre la naturaleza o la fuerza de esa asociación.
+
+Con base en las tablas inferiores, podemos ver lo siguiente:
+
+-   Hay un mayor número de pacientes sin diabetes con respecto a los pacientes con diabetes, por lo que se evidencia una desbalanceo en los datos de la variable objetivo (diabetes).
+-   Hay un mayor número de pacientes femeninas con diabetes con respecto a los pacientes hombres con diabetes.
+-   El mayor numero de personas que NO tienen hipertensión tampoco tienen diabetes.
+-   El mayor numero de personas que NO tienen enfermedades cardiacas tampoco tienen diabetes.
+-   Los pacientes que nunca han tenido historial de tabaquismo y tambien los pacientes de los cuales no se tiene informacion sobre el historial de tabaquismo representan el mayor numero de pacientes que NO tienen diabetes.
+-   Despues de aplicar la prueba de chi cuadrado a cada una de las tablas de contingencia, en practicamente todos los casos nos indica que se sugiere que hay una asociacion significativa entre los pares de variables, pero es importante no confiarse de este resultado, porque la prueba de chi cuadrado puede presentar inestabilidad cuando se trata de un conjunto de datos muy grande.
+
+```{r}
+# Tabla de contingencia entre 'gender' y 'diabetes'
+contingency_table_gender <- table(df$gender, df$diabetes)
+print(contingency_table_gender)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "gender" y "diabetes"
+chi_result_gender <- chisq.test(contingency_table_gender)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_gender$statistic, "\n")
+cat("p-value:", chi_result_gender$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_gender$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'gender' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'gender' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'age' y 'diabetes'
+contingency_table_age <- table(df$age, df$diabetes)
+print(contingency_table_age)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "age" y "diabetes"
+chi_result_age <- chisq.test(contingency_table_age)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_age$statistic, "\n")
+cat("p-value:", chi_result_age$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_age$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'age' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'age' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'hypertension' y 'diabetes'
+contingency_table_hypertension <- table(df$hypertension, df$diabetes)
+print(contingency_table_hypertension)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "hypertension" y "diabetes"
+chi_result_hypertension <- chisq.test(contingency_table_hypertension)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_hypertension$statistic, "\n")
+cat("p-value:", chi_result_hypertension$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_hypertension$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'hypertension' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'hypertension' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'heart_disease' y 'diabetes'
+contingency_table_heart_disease <- table(df$heart_disease, df$diabetes)
+print(contingency_table_heart_disease)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "heart_disease" y "diabetes"
+chi_result_heart_disease <- chisq.test(contingency_table_heart_disease)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_heart_disease$statistic, "\n")
+cat("p-value:", chi_result_heart_disease$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_heart_disease$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'heart_disease' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'heart_disease' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'smoking_history' y 'diabetes'
+contingency_table_smoking_history <- table(df$smoking_history, df$diabetes)
+print(contingency_table_smoking_history)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "smoking_history" y "diabetes"
+chi_result_smoking_history <- chisq.test(contingency_table_smoking_history)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_smoking_history$statistic, "\n")
+cat("p-value:", chi_result_smoking_history$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_smoking_history$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'smoking_history' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'smoking_history' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'bmi' y 'diabetes'
+contingency_table_bmi <- table(df$bmi, df$diabetes)
+print(contingency_table_bmi)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "bmi" y "diabetes"
+chi_result_bmi <- chisq.test(contingency_table_bmi)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_bmi$statistic, "\n")
+cat("p-value:", chi_result_bmi$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_bmi$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'bmi' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'bmi' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'HbA1c_level' y 'diabetes'
+contingency_table_HbA1c_level <- table(df$HbA1c_level, df$diabetes)
+print(contingency_table_HbA1c_level)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "HbA1c_level" y "diabetes"
+chi_result_HbA1c_level <- chisq.test(contingency_table_HbA1c_level)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_HbA1c_level$statistic, "\n")
+cat("p-value:", chi_result_HbA1c_level$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_HbA1c_level$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'HbA1c_level' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'HbA1c_level' y 'diabetes'.")
+}
+```
+
+```{r}
+# Tabla de contingencia entre 'blood_glucose_level' y 'diabetes'
+contingency_table_blood_glucose_level <- table(df$blood_glucose_level, df$diabetes)
+print(contingency_table_blood_glucose_level)
+
+# Realizar la prueba de chi-cuadrado para determinar si existe una asociación significativa entre las variables "blood_glucose_level" y "diabetes"
+chi_result_blood_glucose_level <- chisq.test(contingency_table_blood_glucose_level)
+
+# Imprimir resultados
+cat("Chi-squared:", chi_result_blood_glucose_level$statistic, "\n")
+cat("p-value:", chi_result_blood_glucose_level$p.value, "\n")
+
+# Interpretar los resultados
+alpha <- 0.05
+if (chi_result_blood_glucose_level$p.value < alpha) {
+    print("La prueba de chi-cuadrado sugiere una asociación significativa entre 'blood_glucose_level' y 'diabetes'.")
+} else {
+    print("No hay evidencia suficiente para rechazar la hipótesis nula de independencia entre 'blood_glucose_level' y 'diabetes'.")
+}
+```
+
+### Graficas de barras
+
+Las gráficas de barras son un tipo de visualización que utiliza barras rectangulares o columnas para representar datos. Estas gráficas son útiles para una variedad de propósitos y ofrecen una representación visual efectiva de la distribución o relación entre variables. Son muy útiles para lo siguiente: Comparación de Categorías, Presentación de Datos Categóricos, Visualización de Distribuciones y Comparación de Grupos.
+
+En las graficas inferiores podemos observar la relacion entre pares de variables, de las cuales podemos decir lo siguiente:
+
+-   Tal como lo vimos en las tablas de contingencia, los pacientes del género FEMENINO son los que tienen mayores porcentajes de pacientes CON y SIN diabletes con respecto a los pacientes del genero masculino.
+-   Los pacientes que NO tienen hipertension son los que tienen mayores porcentajes de pacientes CON y SIN diabletes.
+-   Los pacientes que NO tienen enfermedades cardiacas son los que tienen mayores porcentajes de pacientes CON y SIN diabletes.
+-   Los pacientes que NO tienen historial de tabaquismo y tambien los que no tienen informacion al respecto de este habito, son los que tienen mayores porcentajes de pacientes CON y SIN diabletes.
+
+```{r}
+# Gráfico de barras para la relación entre 'gender' y 'diabetes'
+barplot(table(df$gender, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre gender y Diabetes", xlab="gender", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'hypertension' y 'diabetes'
+barplot(table(df$hypertension, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre Hypertension y Diabetes", xlab="hypertension (0: No, 1: Sí)", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'heart_disease' y 'diabetes'
+barplot(table(df$heart_disease, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre heart_disease y Diabetes", xlab="heart_disease (0: No, 1: Sí)", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'smoking_history' y 'diabetes'
+barplot(table(df$smoking_history, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre smoking_history y Diabetes", xlab="smoking_history", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+barplot(table(df$blood_glucose_level, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre blood_glucose_level y Diabetes", xlab="blood_glucose_level", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+barplot(table(df$age, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre age y Diabetes", xlab="age", ylab="count")
+```
+
+### Boxplot entre pares de variables
+
+En las imagenes que se muetsran en la parte inferior podemos visualizar los graficos de tipo boxplot entre diferentes pares de variables, en las cuales observamos lo siguiente:
+
+-   Con respecto a la edad, se puede apreciar que las personas mayores a partir de los 50 años, son las que presentan mas riesgo de diabetes.
+-   Con respecto al bmi, se puede apreciar que mayormente las personas con niveles en un rango de 30 a 40, son las que presentan mas riesgo de diabetes, aunque como ya vimos en los anlsis anteriores, la variable de bmi tiene algunos valores atípicos que estan fuera de la caja del boxplot, entonces, no debemos descartar del todo esos datos, ya que al final pueden influir en el resto de analisis.
+-   Con respecto al nivel de glucosa en la sangre, se puede apreciar que mayormente las personas con niveles en un rango de 150 a 240, son las que presentan mas riesgo de diabetes. Al igual que con la variable de "bmi", la variable "blood_glucose_level" presenta algunos valores atipicos que no se deben descartar del todo, ya que pueden influir en los analisis posteriores.
+
+```{r}
+# Relación entre age y diabetes
+boxplot(age ~ diabetes, data=df, col=c("lightblue", "lightcoral"), main="Niveles de edad en Pacientes con y sin Diabetes", xlab="Diabetes (0: No, 1: Sí)", ylab="age")
+```
+
+```{r}
+# Relación entre bmi y diabetes
+boxplot(bmi ~ diabetes, data=df, col=c("lightblue", "lightcoral"), main="Niveles de bmi en Pacientes con y sin Diabetes", xlab="Diabetes (0: No, 1: Sí)", ylab="bmi")
+```
+
+```{r}
+# Relación entre HbA1c_level y diabetes
+boxplot(HbA1c_level ~ diabetes, data=df, col=c("lightblue", "lightcoral"), main="Niveles de HbA1c en Pacientes con y sin Diabetes", xlab="Diabetes (0: No, 1: Sí)", ylab="HbA1c_level")
+```
+
+```{r}
+# Relación entre nivel de glucosa en sangre y diabetes
+boxplot(blood_glucose_level ~ diabetes, data=df, col=c("lightblue", "lightcoral"), main="Niveles de Glucosa en Sangre en Pacientes con y sin Diabetes", xlab="Diabetes (0: No, 1: Sí)", ylab="Blood Glucose Level")
+```
+
+```{r}
+# Relación entre blood_glucose_level e hypertension
+boxplot(blood_glucose_level ~ hypertension, data=df, col=c("lightblue", "lightcoral"), main="Niveles de Glucosa en sangre en Pacientes con y sin Hypertension", xlab="Hypertension (0: No, 1: Sí)", ylab="blood_glucose_level")
+```
+
+```{r}
+# Relación entre bmi e hypertension
+boxplot(bmi ~ hypertension, data=df, col=c("lightblue", "lightcoral"), main="Niveles de bmi en Pacientes con y sin Hypertension", xlab="Hypertension (0: No, 1: Sí)", ylab="bmi")
+```
+
+```{r}
+# Relación entre age e hypertension
+boxplot(age ~ hypertension, data=df, col=c("lightblue", "lightcoral"), main="Niveles de edad en Pacientes con y sin Hypertension", xlab="Hypertension (0: No, 1: Sí)", ylab="age")
+```
+
+### Análisis de distribución, Graficas de densidad, Intervalos de confianza, Asimetría, Curtosis y Pruebas de Normalidad
+
+La distribución normal es una de las más famosas y más utilizadas. Muchos de los análisis estadísticos que hacemos toman a la distribución normal como un "estándar".
+
+La curtosis es una medida de la dispersión de nuestros datos. La curtosis nos dice qué tan escarpada o achatada está nuestra distribución. Curtosis de 0 indica que la dispersión de nuestros datos es normal (más adelante aprenderemos exactamente qué significa esto). Curtosis positiva indica que nuestra distribución está achatada. Esto implica que hay más dispersión de nuestros datos, que están más lejanos de nuestro punto central y que por lo tanto tenemos colas largas (comparadas con la cola normal). Curtosis negativa indica que nuestra distribución está escarpada. Esto implica que hay menos dispersión de nuestros datos, que están más cercanos a nuestro punto central y que por lo tanto tenemos colas cortas (comparadas con la cola normal).
+
+La asimetría nos da una medida de la falta de simetría en una distribución (duh). Una distribución es simétrica si se ve igual a la izquierda y derecha del punto central. Una asimetría de 0 indica que la simetría de la distribución es perfecta. Números positivos indican que hay una asimetría positiva, es decir que la cola de la derecha es más larga que la cola de la izquierda. Números negativos indican que hay una asimetría negativa, es decir que la cola de la izquierda es más larga que la cola de la derecha.
+
+La prueba de normalidad de Shapiro-Wilk es una prueba estadística utilizada para evaluar si una muestra de datos sigue una distribución normal. Esta prueba se utiliza comúnmente en el análisis de datos para verificar la normalidad de una muestra antes de aplicar métodos estadísticos paramétricos que asumen normalidad. Es importante recordar que la prueba de normalidad de Shapiro-Wilk puede ser sensible al tamaño de la muestra, por lo que con muestras grandes, la prueba puede detectar desviaciones leves de la normalidad que pueden no tener importancia práctica.
+
+```{r}
+# Instala el paquete e1071 si aún no está instalado
+if (!requireNamespace("e1071", quietly = TRUE)) {
+  install.packages("e1071")
+}
+
+# Carga el paquete e1071
+library(e1071)
+```
+
+```{r}
+# Instala y carga los paquetes necesarios
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+if (!requireNamespace("e1071", quietly = TRUE)) {
+  install.packages("e1071")
+}
+
+# Selecciona las variables no categóricas
+df_sin_variables_categoricas <- df[, !(names(df) %in% c("gender", "smoking_history"))]
+
+# Grafica la densidad general del dataset
+library(ggplot2)
+library(e1071)
+
+# Convierte el dataframe a una matriz numérica
+df_numeric <- as.matrix(df_sin_variables_categoricas)
+
+# Obtenemos la densidad y graficamos
+density_plot <- density(df_numeric)
+plot(density_plot, main="Densidad General del Dataset (excluyendo variables categóricas)", xlab="Valor", col="blue")
+rug(df_numeric)
+
+# Función para graficar densidad y calcular curtosis y asimetría
+plot_density_and_stats <- function(variable) {
+  ggplot(df_sin_variables_categoricas, aes(x = !!sym(variable))) +
+    geom_density(fill = "blue", alpha = 0.7) +
+    labs(title = paste("Densidad de", variable),
+         x = "Valor") +
+    theme_minimal()
+
+  cat(paste("Curtosis de", variable, ":", kurtosis(df_sin_variables_categoricas[[variable]]), "\n"))
+  cat(paste("Asimetría de", variable, ":", skewness(df_sin_variables_categoricas[[variable]]), "\n"))
+}
+
+# Aplica la función a cada variable no categórica
+non_categorical_variables <- names(df_sin_variables_categoricas)
+for (variable in non_categorical_variables) {
+  plot_density_and_stats(variable)
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "age"
+age <- df$age
+min_age <- min(age, na.rm = TRUE)
+max_age <- max(age, na.rm = TRUE)
+rango_age <- max_age - min_age
+cat(sprintf('Valor mínimo de "age": %f\n', min_age))
+cat(sprintf('Valor máximo de "age": %f\n', max_age))
+cat(sprintf('Rango de "age": %f\n', rango_age))
+
+# Obtenemos la gráfica de boxplot para la variable "age" para visualizar el valor de la media y si hay valores atípicos
+boxplot(age, main="Boxplot de Age", ylab="Age")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "age"
+limite_inferior_age <- quantile(age, 0.025, na.rm = TRUE)
+limite_superior_age <- quantile(age, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "age": %f < %f < %f\n', limite_inferior_age, mean(age, na.rm = TRUE), limite_superior_age))
+
+# Obtenemos la visualización del comportamiento de la variable "age" donde también se observa su intervalo de confianza
+hist(age, col="lightblue", main="Histograma de Age", xlab="Age")
+abline(v = c(limite_inferior_age, limite_superior_age), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para age
+ggplot(df, aes(x = age)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para age") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "age"
+cat(sprintf('Curtosis para la distribución de la variable "age": %f\n', e1071::kurtosis(age, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "age": %f\n', e1071::skewness(age, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "age" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_age <- sample(age, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_age)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'age' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'age' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "hypertension"
+hypertension <- df$hypertension
+min_hypertension <- min(hypertension, na.rm = TRUE)
+max_hypertension <- max(hypertension, na.rm = TRUE)
+rango_hypertension <- max_hypertension - min_hypertension
+cat(sprintf('Valor mínimo de "hypertension": %f\n', min_hypertension))
+cat(sprintf('Valor máximo de "hypertension": %f\n', max_hypertension))
+cat(sprintf('Rango de "hypertension": %f\n', rango_hypertension))
+
+# Obtenemos la gráfica de boxplot para la variable "hypertension" para visualizar el valor de la media y si hay valores atípicos
+boxplot(hypertension, main="Boxplot de hypertension", ylab="hypertension")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "hypertension"
+limite_inferior_hypertension <- quantile(hypertension, 0.025, na.rm = TRUE)
+limite_superior_hypertension <- quantile(hypertension, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "hypertension": %f < %f < %f\n', limite_inferior_hypertension, mean(hypertension, na.rm = TRUE), limite_superior_hypertension))
+
+# Obtenemos la visualización del comportamiento de la variable "hypertension" donde también se observa su intervalo de confianza
+hist(hypertension, col="lightblue", main="Histograma de hypertension", xlab="hypertension")
+abline(v = c(limite_inferior_hypertension, limite_superior_hypertension), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para hypertension
+ggplot(df, aes(x = hypertension)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para hypertension") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "hypertension"
+cat(sprintf('Curtosis para la distribución de la variable "hypertension": %f\n', e1071::kurtosis(hypertension, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "hypertension": %f\n', e1071::skewness(hypertension, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "hypertension" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_hypertension <- sample(hypertension, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_hypertension)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'hypertension' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'hypertension' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "heart_disease"
+heart_disease <- df$heart_disease
+min_heart_disease <- min(heart_disease, na.rm = TRUE)
+max_heart_disease <- max(heart_disease, na.rm = TRUE)
+rango_heart_disease <- max_heart_disease - min_heart_disease
+cat(sprintf('Valor mínimo de "heart_disease": %f\n', min_heart_disease))
+cat(sprintf('Valor máximo de "heart_disease": %f\n', max_heart_disease))
+cat(sprintf('Rango de "heart_disease": %f\n', rango_heart_disease))
+
+# Obtenemos la gráfica de boxplot para la variable "heart_disease" para visualizar el valor de la media y si hay valores atípicos
+boxplot(heart_disease, main="Boxplot de heart_disease", ylab="heart_disease")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "heart_disease"
+limite_inferior_heart_disease <- quantile(heart_disease, 0.025, na.rm = TRUE)
+limite_superior_heart_disease <- quantile(heart_disease, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "heart_disease": %f < %f < %f\n', limite_inferior_heart_disease, mean(heart_disease, na.rm = TRUE), limite_superior_heart_disease))
+
+# Obtenemos la visualización del comportamiento de la variable "heart_disease" donde también se observa su intervalo de confianza
+hist(heart_disease, col="lightblue", main="Histograma de heart_disease", xlab="heart_disease")
+abline(v = c(limite_inferior_heart_disease, limite_superior_heart_disease), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para heart_disease
+ggplot(df, aes(x = heart_disease)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para heart_disease") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "heart_disease"
+cat(sprintf('Curtosis para la distribución de la variable "heart_disease": %f\n', e1071::kurtosis(heart_disease, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "heart_disease": %f\n', e1071::skewness(heart_disease, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "heart_disease" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_heart_disease <- sample(heart_disease, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_heart_disease)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'heart_disease' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'heart_disease' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "bmi"
+bmi <- df$bmi
+min_bmi <- min(bmi, na.rm = TRUE)
+max_bmi <- max(bmi, na.rm = TRUE)
+rango_bmi <- max_bmi - min_bmi
+cat(sprintf('Valor mínimo de "bmi": %f\n', min_bmi))
+cat(sprintf('Valor máximo de "bmi": %f\n', max_bmi))
+cat(sprintf('Rango de "bmi": %f\n', rango_bmi))
+
+# Obtenemos la gráfica de boxplot para la variable "bmi" para visualizar el valor de la media y si hay valores atípicos
+boxplot(bmi, main="Boxplot de bmi", ylab="bmi")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "bmi"
+limite_inferior_bmi <- quantile(bmi, 0.025, na.rm = TRUE)
+limite_superior_bmi <- quantile(bmi, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "bmi": %f < %f < %f\n', limite_inferior_bmi, mean(bmi, na.rm = TRUE), limite_superior_bmi))
+
+# Obtenemos la visualización del comportamiento de la variable "bmi" donde también se observa su intervalo de confianza
+hist(bmi, col="lightblue", main="Histograma de bmi", xlab="bmi")
+abline(v = c(limite_inferior_bmi, limite_superior_bmi), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para bmi
+ggplot(df, aes(x = bmi)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para bmi") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "bmi"
+cat(sprintf('Curtosis para la distribución de la variable "bmi": %f\n', e1071::kurtosis(bmi, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "bmi": %f\n', e1071::skewness(bmi, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "bmi" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_bmi <- sample(bmi, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_bmi)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'bmi' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'bmi' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "HbA1c_level"
+HbA1c_level <- df$HbA1c_level
+min_HbA1c_level <- min(HbA1c_level, na.rm = TRUE)
+max_HbA1c_level <- max(HbA1c_level, na.rm = TRUE)
+rango_HbA1c_level <- max_HbA1c_level - min_HbA1c_level
+cat(sprintf('Valor mínimo de "HbA1c_level": %f\n', min_HbA1c_level))
+cat(sprintf('Valor máximo de "HbA1c_level": %f\n', max_HbA1c_level))
+cat(sprintf('Rango de "HbA1c_level": %f\n', rango_HbA1c_level))
+
+# Obtenemos la gráfica de boxplot para la variable "HbA1c_level" para visualizar el valor de la media y si hay valores atípicos
+boxplot(HbA1c_level, main="Boxplot de HbA1c_level", ylab="HbA1c_level")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "HbA1c_level"
+limite_inferior_HbA1c_level <- quantile(HbA1c_level, 0.025, na.rm = TRUE)
+limite_superior_HbA1c_level <- quantile(HbA1c_level, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "HbA1c_level": %f < %f < %f\n', limite_inferior_HbA1c_level, mean(HbA1c_level, na.rm = TRUE), limite_superior_HbA1c_level))
+
+# Obtenemos la visualización del comportamiento de la variable "HbA1c_level" donde también se observa su intervalo de confianza
+hist(HbA1c_level, col="lightblue", main="Histograma de HbA1c_level", xlab="HbA1c_level")
+abline(v = c(limite_inferior_HbA1c_level, limite_superior_HbA1c_level), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para HbA1c_level
+ggplot(df, aes(x = HbA1c_level)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para HbA1c_level") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "HbA1c_level"
+cat(sprintf('Curtosis para la distribución de la variable "HbA1c_level": %f\n', e1071::kurtosis(HbA1c_level, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "HbA1c_level": %f\n', e1071::skewness(HbA1c_level, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "HbA1c_level" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_HbA1c_level <- sample(HbA1c_level, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_HbA1c_level)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'HbA1c_level' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'HbA1c_level' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "blood_glucose_level"
+blood_glucose_level <- df$blood_glucose_level
+min_blood_glucose_level <- min(blood_glucose_level, na.rm = TRUE)
+max_blood_glucose_level <- max(blood_glucose_level, na.rm = TRUE)
+rango_blood_glucose_level <- max_blood_glucose_level - min_blood_glucose_level
+cat(sprintf('Valor mínimo de "blood_glucose_level": %f\n', min_blood_glucose_level))
+cat(sprintf('Valor máximo de "blood_glucose_level": %f\n', max_blood_glucose_level))
+cat(sprintf('Rango de "blood_glucose_level": %f\n', rango_blood_glucose_level))
+
+# Obtenemos la gráfica de boxplot para la variable "blood_glucose_level" para visualizar el valor de la media y si hay valores atípicos
+boxplot(blood_glucose_level, main="Boxplot de blood_glucose_level", ylab="blood_glucose_level")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "blood_glucose_level"
+limite_inferior_blood_glucose_level <- quantile(blood_glucose_level, 0.025, na.rm = TRUE)
+limite_superior_blood_glucose_level <- quantile(blood_glucose_level, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "blood_glucose_level": %f < %f < %f\n', limite_inferior_blood_glucose_level, mean(blood_glucose_level, na.rm = TRUE), limite_superior_blood_glucose_level))
+
+# Obtenemos la visualización del comportamiento de la variable "blood_glucose_level" donde también se observa su intervalo de confianza
+hist(blood_glucose_level, col="lightblue", main="Histograma de blood_glucose_level", xlab="blood_glucose_level")
+abline(v = c(limite_inferior_blood_glucose_level, limite_superior_blood_glucose_level), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para blood_glucose_level
+ggplot(df, aes(x = blood_glucose_level)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para blood_glucose_level") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "blood_glucose_level"
+cat(sprintf('Curtosis para la distribución de la variable "blood_glucose_level": %f\n', e1071::kurtosis(blood_glucose_level, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "blood_glucose_level": %f\n', e1071::skewness(blood_glucose_level, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "blood_glucose_level" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_blood_glucose_level <- sample(blood_glucose_level, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_blood_glucose_level)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'blood_glucose_level' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'blood_glucose_level' no parecen seguir una distribución normal.\n")
+}
+```
+
+```{r}
+# Obteniendo valores mínimos, máximos y rango de la variable "diabetes"
+diabetes <- df$diabetes
+min_diabetes <- min(diabetes, na.rm = TRUE)
+max_diabetes <- max(diabetes, na.rm = TRUE)
+rango_diabetes <- max_diabetes - min_diabetes
+cat(sprintf('Valor mínimo de "diabetes": %f\n', min_diabetes))
+cat(sprintf('Valor máximo de "diabetes": %f\n', max_diabetes))
+cat(sprintf('Rango de "diabetes": %f\n', rango_diabetes))
+
+# Obtenemos la gráfica de boxplot para la variable "diabetes" para visualizar el valor de la media y si hay valores atípicos
+boxplot(diabetes, main="Boxplot de diabetes", ylab="diabetes")
+
+# Obteniendo intervalos de confianza usando cuantiles para la variable "diabetes"
+limite_inferior_diabetes <- quantile(diabetes, 0.025, na.rm = TRUE)
+limite_superior_diabetes <- quantile(diabetes, 0.975, na.rm = TRUE)
+cat(sprintf('Intervalo de 95%% confianza de la media para la variable "diabetes": %f < %f < %f\n', limite_inferior_diabetes, mean(diabetes, na.rm = TRUE), limite_superior_diabetes))
+
+# Obtenemos la visualización del comportamiento de la variable "diabetes" donde también se observa su intervalo de confianza
+hist(diabetes, col="lightblue", main="Histograma de diabetes", xlab="diabetes")
+abline(v = c(limite_inferior_diabetes, limite_superior_diabetes), col = c("red", "red"), lty = c(2, 2))
+
+# Graficar el kernel density plot para diabetes
+ggplot(df, aes(x = diabetes)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Kernel Density Plot para diabetes") +
+  theme_minimal()
+
+# Calculamos la asimetría y la curtosis para la distribución de la variable "diabetes"
+cat(sprintf('Curtosis para la distribución de la variable "diabetes": %f\n', e1071::kurtosis(diabetes, na.rm = TRUE)))
+cat(sprintf('Asimetría para la distribución de la variable "diabetes": %f\n', e1071::skewness(diabetes, na.rm = TRUE)))
+
+# Tomar una muestra aleatoria de "diabetes" con un tamaño de muestra más pequeño (por ejemplo, 100)
+sample_diabetes <- sample(diabetes, 100, replace = TRUE)
+
+# Realizar la prueba de Shapiro-Wilk en la muestra aleatoria
+shapiro_test <- shapiro.test(sample_diabetes)
+cat(sprintf('Statistic: %f, p-value: %f\n', shapiro_test$statistic, shapiro_test$p.value))
+alpha <- 0.05
+if (shapiro_test$p.value > alpha) {
+    cat("No podemos rechazar la hipótesis nula: los datos de la variable 'diabetes' parecen seguir una distribución normal.\n")
+} else {
+    cat("Rechazamos la hipótesis nula: los datos de la variable 'diabetes' no parecen seguir una distribución normal.\n")
+}
+```
+
+### Aplicando Transformación Logarítmica para intentar la normalización de la distribución
+
+Despues de explorar como se comportan cada una de las variables del dataset, hicimos una evaluacion para validar si por ejemplo en la variable blood_glucose_level se puede normalizar su distribucion aplicando Transformacion Logaritmica. Despues generamos la grafica de la nueva distribucion y tambien aplicamos la prueba de Shapiro-Wilk para comproar si habia normalidad.
+
+Con base en los resultados anteriores podemos decir que NO hay un cambio sustancial en la normalidad de la distribucion de la varibale "blood_glucose_level" despues de aplicar transformacion logarítmica Incluso aplicando la prueba de Shapiro-Wilk tambien nos indica que le valor del parametro p-value sigue siendo practicamete el mismo antes y despues de la transformación. Incluimos un gráfico Q-Q plot después de la transformación logarítmica, lo que permite evaluar visualmente la normalidad de los datos transformados
+
+```{r}
+# Cargar la librería necesaria
+library(ggplot2)
+
+# Especificar el tamaño de la muestra
+tamano_muestra <- 1000
+
+# Obtener una muestra aleatoria de tu conjunto de datos
+muestra <- df[sample(nrow(df), tamano_muestra), ]
+
+# Aplicar la prueba de Shapiro-Wilk a la variable 'blood_glucose_level'
+resultado_shapiro <- shapiro.test(muestra$blood_glucose_level)
+
+# Imprimir el resultado
+print(resultado_shapiro)
+
+# Verificar el p-value para tomar decisiones
+alpha <- 0.05
+if (resultado_shapiro$p.value > alpha) {
+  cat("No podemos rechazar la hipótesis nula: los datos parecen seguir una distribución normal.\n")
+} else {
+  cat("Rechazamos la hipótesis nula: los datos no parecen seguir una distribución normal.\n")
+}
+
+# Visualización del Q-Q plot
+qqnorm(muestra$blood_glucose_level, main='Q-Q Plot', col='blue', pch=20)
+qqline(muestra$blood_glucose_level, col='red', lwd=2)
+```
+
+```{r}
+# Cargar la librería necesaria
+library(ggplot2)
+
+# Aplicar la transformación logarítmica a 'blood_glucose_level'
+log_blood_glucose_level <- log1p(df$blood_glucose_level)
+log_blood_glucose_level
+```
+
+```{r}
+# Crear subgráficos para visualizar las distribuciones antes y después de la transformación
+par(mfrow=c(1, 2), mar=c(4, 4, 2, 2))
+
+# Antes de la transformación logarítmica
+hist(df$blood_glucose_level, main='Distribución Original', xlab='Blood Glucose Level', col='lightblue', border='black', prob=TRUE)
+lines(density(df$blood_glucose_level), col='blue', lwd=2)
+mtext('Kernel Density Estimation', side=3, line=2)
+
+# Después de la transformación logarítmica
+hist(log_blood_glucose_level, main='Distribución Después de la Transformación Logarítmica', xlab='Log-transformed Blood Glucose Level', col='lightgreen', border='black', prob=TRUE)
+lines(density(log_blood_glucose_level), col='darkgreen', lwd=2)
+mtext('Kernel Density Estimation', side=3, line=2)
+
+# Gráfico Q-Q plot después de la transformación
+qqnorm(log_blood_glucose_level, main='Q-Q Plot Después de la Transformación Logarítmica', col='darkgreen', pch=20)
+qqline(log_blood_glucose_level, col='red', lwd=2)
+```
+
+### Coeficiente de correlación de Pearson
+
+El coeficiente de correlación de Pearson, también conocido como correlación lineal o r de Pearson (simbolizado como r), es una medida estadística que cuantifica la fuerza y la dirección de una relación lineal entre dos variables cuantitativas. Este coeficiente varía entre -1 y 1, donde: - r=1 indica una correlación positiva perfecta (a medida que una variable aumenta, la otra también aumenta linealmente). - r = −1 indica una correlación negativa perfecta (a medida que una variable aumenta, la otra disminuye linealmente). - r=0 indica la ausencia de correlación lineal. Algunos de los propositos mas importantes son: Medición de Asociación Lineal: El coeficiente de correlación de Pearson es especialmente útil cuando se desea evaluar si hay una relación lineal entre dos variables. Proporciona una medida cuantitativa de la fuerza y dirección de esta relación. Identificación de Tendencias: Cuando las variables están positiva o negativamente correlacionadas, el coeficiente de correlación puede ayudar a identificar tendencias. Por ejemplo, si r es positivo, las variables tienden a aumentar juntas; si r es negativo, una variable tiende a disminuir cuando la otra aumenta.
+
+![](images/Correlation_coefficient.png)
+
+```{r}
+# Instala los paquetes necesarios si no están instalados
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+if (!requireNamespace("corrplot", quietly = TRUE)) {
+  install.packages("corrplot")
+}
+```
+
+En la grafica que se muestra en la perte inferior, podemos ver el mapa de correlacion de todas las variables del dataset, esto nos permite ver cual es el nivel de correlacion que puede haber entre una variable y otra. Como se observa, las variables que presentan un mayor indice de correlacion son:
+
+-   blood_glucose_level y diabetes
+-   HbA1c_level y diabetes
+-   age y bmi En las 3 correlaciones r es positivo, lo cual indica que ambas tienden a aumentar juntas, aunque debido a que el valor de r no esta totalmente en los extremos (1 y -1)puede implicar que ese aumento no se totalmente lineal, pero sin duda nos muestra informacion importante sobre cuales avraibels pueden ser interesantes para el analisis.
+
+```{r}
+library(corrplot)
+# Excluir las columnas "gender" y "smoking_history"
+numeric_df <- df[, !(names(df) %in% c("gender", "smoking_history"))]
+
+# Obtención de la matriz de correlación
+correlation_matrix <- cor(numeric_df)
+
+# Crear el mapa de calor con correlación
+corrplot(correlation_matrix, method = "color", type = "upper",
+         addCoef.col = "black", tl.col = "black", tl.srt = 45,
+         diag = FALSE, title = "Mapa de calor con correlación",
+         col = colorRampPalette(c("blue", "white", "red"))(50))
+```
+
+### Diagramas de dispersión entre las variables del dataframe
+
+La función scatter_matrix se utiliza para crear una matriz de gráficos de dispersión, también conocida como matriz de dispersión, que muestra las relaciones entre todas las variables en un DataFrame. Cada punto en el gráfico de dispersión representa la relación entre dos variables. Esta visualización es especialmente útil para explorar la estructura de los datos y buscar patrones o correlaciones entre variables. El pairplot es una visualización que muestra gráficos de dispersión para cada par de variables en un DataFrame y histogramas en la diagonal principal. Esta visualización es especialmente útil cuando trabajas con conjuntos de datos multivariados.
+
+Con base en las figuras mostradas en la parte inferior, pbservando primeramente el scatter_matrix podemos ver que en muchas celdas salen unas graficas con muchos puntos y eso se debe a que se trata de variables binarias, por lo que este tipo de graficas en realidad no nos dice mucho, pero hay algunas variables como "bmi" y "age" que sugieren cierta correlacion. Despues, observando la grafica de Pairplot, se puede ver el grado de relacion entre dos variables con respecto a la variable objetivo, que en este caso es "diabetes". Aqui se puede observar que las variables age, bmi, blood_glucose_level y HbA1c_level, tienen cierto grado de relación.
+
+```{r}
+# Configuramos espejo de CRAN
+options(repos = c(CRAN = "https://cran.r-project.org"))
+```
+
+```{r}
+# Instala los paquetes necesarios si no están instalados
+install.packages("GGally")
+library(corrplot)
+library(GGally)
+```
+
+```{r}
+# Excluye las variables categóricas
+df_numeric <- df[, sapply(df, is.numeric)]
+
+# Obtención de la matriz de correlación
+correlation_matrix <- cor(df_numeric)
+
+# Visualización del mapa de calor con correlación
+corrplot(correlation_matrix, method="color", type="upper", addCoef.col="black", tl.col="black", tl.srt=45)
+
+# Diagrama de dispersión entre las variables del dataframe
+scatter_matrix <- ggpairs(df_numeric)
+
+# Pairplot Matrix
+scatter_matrix + theme(plot.title = element_text(hjust = 0.5))  # Ajusta la posición del título
+```
+
+### Análisis de la relación entre las variables del dataframe
+
+Obtener un scatterplot entre dos variables, considerando una variable objetivo, es una práctica común en análisis de datos y exploración visual, especialmente cuando se trabaja en problemas de regresión o clasificación. Un scatterplot te permite visualizar la relación entre dos variables, lo que es especialmente útil cuando estás interesado en entender cómo la variable objetivo se relaciona con una variable independiente específica. Al examinar el scatterplot, puedes identificar patrones visuales, tendencias y estructuras en los datos. Esto te ayuda a entender si hay una relación lineal, no lineal o ninguna entre las variables. Los outliers (valores atípicos) pueden tener un impacto significativo en el rendimiento de los modelos. Un scatterplot puede ayudarte a identificar visualmente si hay valores inusuales o atípicos.
+
+En las Figuras que se muestran en la parte inferior, ejecutamos un analisis entre pares de variables para visualizar la relacion que tienen ambas en relacion con la variable objetivo, que en este caso es "diabetes". Se puede observar lo siguiente:
+
+-   Entre las variables "age" y "bmi" se observa que a mayor edad tambien hay mayores nivel de bmi y tambien refleja mayor riesgo a diabetes.
+-   Entre las variables "blood_glucose_level" y "bmi" se observa que a mayores niveles de Glucosa en la sangre tambien refleja mayor riesgo a diabetes, y tambien se puede ver que tanto a bajos como a altos niveles de bmi se pueden tener altos niveles de glucosa en sangre, lo cual sigue siendo riesgoso para tener diabetes.
+
+```{r}
+library(ggplot2)
+
+# Análisis de la relación entre BMI y Edad
+ggplot(df, aes(x = bmi, y = age, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre BMI y Edad") +
+  theme_minimal()
+```
+
+```{r}
+# Análisis de la relación entre BMI y Nivel de Glucosa en Sangre
+ggplot(df, aes(x = bmi, y = blood_glucose_level, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre BMI y Nivel de Glucosa en Sangre") +
+  theme_minimal()
+```
+
+```{r}
+# Análisis de la relación entre Edad y Nivel de HbA1c
+ggplot(df, aes(x = age, y = HbA1c_level, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre Edad y Nivel de HbA1c") +
+  theme_minimal()
+```
+
+```{r}
+# Análisis de la relación entre Age e Hypertension
+ggplot(df, aes(x = age, y = hypertension, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre Age e Hypertension") +
+  theme_minimal()
+```
+
+```{r}
+# Análisis de la relación entre Age y heart_disease
+ggplot(df, aes(x = age, y = heart_disease, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre Age y heart_disease") +
+  theme_minimal()
+```
+
+### Análisis inferencial y comunicación de resultados
+
+```{r}
+# Instalar los paquetes necesarios si no están ya instalados
+install.packages("tidyverse", dependencies = TRUE)
+install.packages("MASS", dependencies = TRUE)
+install.packages("rlang", dependencies = TRUE)
+#install.packages("tidyverse", type = "binary")
+```
+
+```{r}
+# Instalar los paquetes necesarios si no están ya instalados
+install.packages("conflicted", dependencies=TRUE)
+library(conflicted)
+```
+
+```{r}
+# Cargar las librerías necesarias
+library(tidyverse)
+library(ggplot2)
+library(GGally)
+```
+
+```{r}
+library(reticulate)
+os <- import("os")
+os$listdir(".")
+
+library(dplyr)
+# Cargamos el archivo 'diabetes_dataset.csv' en un dataframe
+diabetes_data <- read.csv('diabetes_dataset.csv')
+head(df)
+```
+
+```{r}
+# Inspección inicial de los datos
+glimpse(diabetes_data)
+summary(diabetes_data)
+```
+
+```{r}
+# Comprobación de valores faltantes por columna
+colSums(is.na(diabetes_data))
+```
+
+```{r}
+# Visualizaciones para el EDA
+# Histograma de la edad
+ggplot(diabetes_data, aes(x = age)) +
+  geom_histogram(binwidth = 1, fill = 'blue', color = 'white') +
+  theme_minimal() +
+  labs(title = "Distribución de la Edad", x = "Edad", y = "Frecuencia")
+```
+
+```{r}
+# Gráfico de densidad del índice de masa corporal (BMI)
+ggplot(diabetes_data, aes(x = bmi)) +
+  geom_density(fill = 'green', alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Distribución del BMI", x = "BMI", y = "Densidad")
+```
+
+```{r}
+# Gráficos de cajas para variables numéricas
+num_vars <- diabetes_data %>% select(age, bmi, HbA1c_level, blood_glucose_level)
+num_vars %>%
+  gather(key = "variable", value = "value") %>%
+  ggplot(aes(x = variable, y = value)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Boxplots de Variables Numéricas", x = "Variable", y = "Valor")
+```
+
+```{r}
+# Gráficos de pares para relaciones bivariadas
+ggpairs(diabetes_data %>% select(age, bmi, HbA1c_level, blood_glucose_level))
+```
+
+```{r}
+# Mapa de calor de correlaciones
+correlations <- cor(num_vars)
+ggplot(data = as.data.frame(as.table(correlations)), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(title = "Mapa de Calor de Correlaciones", x = "Variable", y = "Variable", fill = "Correlación")
+```
+
+Análisis inferencial y comunicación de resultados
+
+```{r}
+t_test_age <- t.test(age ~ diabetes, data = diabetes_data)
+print(t_test_age)
+```
+
+```{r}
+inferencia_age <- if (t_test_age$p.value < 0.05) {
+  "Existe una diferencia estadísticamente significativa en la edad media entre los pacientes con y sin diabetes."
+} else {
+  "No existe una diferencia estadísticamente significativa en la edad media entre los pacientes con y sin diabetes."
+}
+print(inferencia_age)
+```
+
+### Modelo de regresión logística para la relación entre BMI y diabetes
+
+```{r}
+# Modelo de regresión logística para la relación entre BMI y diabetes
+logistic_regression <- glm(diabetes ~ bmi, data = diabetes_data, family = binomial)
+summary_logistic_regression <- summary(logistic_regression)
+print(summary_logistic_regression)
+```
+
+```{r}
+# Interpretación del modelo de regresión logística
+interpretation_logistic_regression <- ifelse(summary_logistic_regression$coefficients[2,4] < 0.05,
+                                             paste("El BMI es un predictor significativo del resultado de la diabetes con un p-valor de",
+                                                   summary_logistic_regression$coefficients[2,4]),
+                                             "El BMI no es un predictor significativo del resultado de la diabetes.")
+print(interpretation_logistic_regression)
+```
+
+### Análisis de la hipótesis: La obesidad conduce a un mayor riesgo de diabetes
+
+#### Análisis de la hipótesis: La obesidad conduce a un mayor riesgo de diabetes
+
+```{r}
+# Definir la obesidad como un BMI mayor a 30
+diabetes_data$Obesity <- ifelse(diabetes_data$bmi > 30, "Obese", "Not Obese")
+diabetes_data
+```
+
+```{r}
+# Definir la obesidad como un BMI mayor a 30
+diabetes_data$Obesity_num <- ifelse(diabetes_data$bmi > 30, "1", "0")
+diabetes_data
+```
+
+```{r}
+# Modelo de regresión logística con la obesidad
+obesity_regression <- glm(diabetes ~ Obesity, data = diabetes_data, family = binomial)
+summary_obesity_regression <- summary(obesity_regression)
+print(summary_obesity_regression)
+```
+
+```{r}
+# Interpretación del modelo de regresión logística con la obesidad
+interpretation_obesity_regression <- ifelse(
+  summary_obesity_regression$coefficients["ObesityObese", "Pr(>|z|)"] < 0.05,
+  paste("La obesidad es un predictor significativo del resultado de la diabetes con un p-valor de",
+        summary_obesity_regression$coefficients["ObesityObese", "Pr(>|z|)"]),
+  "La obesidad no es un predictor significativo del resultado de la diabetes."
+)
+print(interpretation_obesity_regression)
+```
+
+#### Resultados
+
+```{r}
+# Gráfico de barras para la relación entre 'Obesity_num' y 'diabetes'
+barplot(table(diabetes_data$Obesity_num, diabetes_data$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre Obesity y Diabetes", xlab="Obesity (0: No, 1: Sí)", ylab="count")
+```
+
+La variable ''ObesityObese'' es estadísticamente significativa con un p-valor muy por debajo del umbral estándar de 0.05. Esto indica que ser obeso (con un BMI mayor a 30) está significativamente asociado con un mayor riesgo de tener diabetes.
+
+El coeficiente para ObesityObese es positivo (1.31408), lo que significa que la obesidad aumenta la log-odds de tener diabetes. En términos más prácticos, los individuos clasificados como obesos tienen una mayor probabilidad de tener diabetes en comparación con aquellos que no son obesos. El tamaño del efecto es considerablemente grande, lo que sugiere que la obesidad es un factor de riesgo importante para la diabetes y debería ser un objetivo clave en las intervenciones de prevención.
+
+#### INTERPRETACIÓN
+
+En términos de comunicación de resultados, se puede afirmar que la obesidad es un fuerte predictor de la diabetes y que las políticas de salud pública y las estrategias de intervención deben priorizar la gestión del peso como una medida preventiva contra el desarrollo de la diabetes. Esto también subraya la importancia de intervenciones dietéticas y de estilo de vida para reducir las tasas de obesidad y, por extensión, de diabetes en la población.
+
+### Analisis de hipótesis de interacción:¿Existe una interacción significativa entre el BMI y la edad en la predicción del resultado de la diabetes?
+
+```{r}
+# Preparar datos para análisis
+diabetes_data$age_group <- cut(diabetes_data$age, breaks = c(0, 30, 50, 70, 100), labels = c("0-30", "31-50", "51-70", "71+"))
+
+
+# Modelo de regresión con interacción
+interaction_model <- glm(diabetes ~ bmi * age, data = diabetes_data, family = binomial)
+summary_interaction <- summary(interaction_model)
+print(summary_interaction)
+
+# Interpretación
+if (summary_interaction$coefficients["bmi:age", "Pr(>|z|)"] < 0.05) {
+  print("Existe una interacción significativa entre BMI y edad en la predicción de la diabetes.")
+} else {
+  print("No hay una interacción significativa entre BMI y edad en la predicción de la diabetes.")
+}
+```
+
+```{r}
+# Gráfico para la relación entre 'bmi' y 'age' con respecto a la diabetes
+ggplot(df, aes(x = age, y = bmi, color = factor(diabetes))) +
+  geom_point() +
+  labs(x = "Age", y = "BMI", color = "Diabetes") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal()
+```
+
+#### Resultados
+
+El resumen del modelo de regresión logística que incluye la interacción entre el índice de masa corporal (BMI) y la edad sugiere que existe una interacción estadísticamente significativa entre estas dos variables en la predicción de la diabetes. El término de interacción bmi:age tiene un p-valor muy por debajo del umbral estándar de 0.05, lo que indica que el efecto del BMI en la probabilidad de tener diabetes no es constante a través de diferentes edades.
+
+El coeficiente para la interacción bmi:age es positivo (0.0008470), lo que implica que el efecto combinado de tener un BMI más alto y ser mayor incrementa la probabilidad de tener diabetes más de lo que se esperaría por el efecto de estas dos variables por separado.
+
+#### INTERPRETACIÓN
+
+La interpretación de este modelo es crucial para el diseño de estrategias de prevención y tratamiento, ya que sugiere que el control del peso puede ser especialmente importante para personas mayores en términos de reducción del riesgo de diabetes.
+
+En términos prácticos, esto significa que individuos de mayor edad, el impacto del BMI en el riesgo de diabetes es más pronunciado que para individuos más jóvenes.
+
+Además, al planificar intervenciones de salud pública o al aconsejar a pacientes individuales, los profesionales de la salud podrían considerar la edad y el BMI conjuntamente como factores de riesgo interrelacionados en lugar de tratarlos como factores aislados.
+
+### Analisis de hipótesis de predicción: ¿Pueden las medidas de glucosa en sangre predecir la diabetes de manera más efectiva que el BMI por sí solo?
+
+```{r}
+# Modelo de regresión con niveles de glucosa en sangre
+glucose_model <- glm(diabetes ~ blood_glucose_level, data = diabetes_data, family = binomial)
+summary_glucose <- summary(glucose_model)
+print(summary_glucose)
+
+# Interpretación
+if (summary_glucose$coefficients["blood_glucose_level", "Pr(>|z|)"] < 0.05) {
+  print("Los niveles de glucosa en sangre son un predictor significativo de la diabetes.")
+} else {
+  print("Los niveles de glucosa en sangre no son un predictor significativo de la diabetes.")
+}
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+barplot(table(df$blood_glucose_level, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre blood_glucose_level y Diabetes", xlab="blood_glucose_level", ylab="count")
+```
+
+```{r}
+# Análisis de la relación entre BMI y Nivel de Glucosa en Sangre
+ggplot(df, aes(x = bmi, y = blood_glucose_level, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre BMI y Nivel de Glucosa en Sangre") +
+  theme_minimal()
+```
+
+#### Resultados modelo de regresion logistica
+
+Indica que los niveles de glucosa en sangre son un predictor muy significativo de la diabetes, como lo demuestra el p-valor extremadamente bajo (prácticamente 0). Esto significa que, en este conjunto de datos, a medida que los niveles de glucosa en sangre aumentan, también lo hace la probabilidad de tener diabetes.
+
+Por cada unidad que aumenta el nivel de glucosa en sangre, la probabilidad logarítmica de tener diabetes aumenta en 0.0343388 unidades, manteniendo constantes todas las demás variables. Dado que el coeficiente es positivo y el p-valor es significativo, se puede concluir con gran certeza que hay una relación directa entre los niveles de glucosa en sangre y la presencia de diabetes.
+
+#### INTERPRETACIÓN
+
+Este resultado es coherente con el conocimiento médico general, ya que los niveles elevados de glucosa en sangre son un síntoma central de la diabetes, y el monitoreo de la glucosa en sangre es una herramienta clave para el diagnóstico y manejo de la enfermedad. Por lo tanto, el modelo confirma que los niveles de glucosa en sangre pueden ser un buen indicador de riesgo de diabetes en la población estudiada.
+
+### Analisis de hipótesis de grupos de edad: ¿Varía la prevalencia de la diabetes entre diferentes grupos de edad?
+
+```{r}
+# HIPÓTESIS 3: Prevalencia de diabetes entre grupos de edad
+diabetes_data$age_group <- cut(diabetes_data$age, breaks=c(0, 30, 50, 70, Inf), labels=c("0-30", "31-50", "51-70", "70+"))
+age_group_comparison <- aggregate(diabetes ~ age_group, data = diabetes_data, mean)
+barplot(age_group_comparison$diabetes, names.arg = age_group_comparison$age_group)
+print(age_group_comparison)
+
+print("Interpretación: Las diferencias en la altura de las barras sugieren variaciones en la prevalencia de diabetes entre grupos de edad. Se requiere un análisis estadístico adicional para confirmar la significancia.")
+
+# ANOVA para comparar la prevalencia de diabetes entre grupos de edad
+anova_age <- aov(diabetes ~ age_group, data = diabetes_data)
+print(summary(anova_age))
+print("Interpretación ANOVA: Un p-valor bajo indica diferencias significativas en la prevalencia de diabetes entre diferentes grupos de edad.")
+# Interpretación
+if (summary(anova_age)[[1]]["age_group", "Pr(>F)"] < 0.05) {
+  print("Existe una diferencia significativa en la prevalencia de diabetes entre los grupos de edad.")
+} else {
+  print("No hay diferencias significativas en la prevalencia de diabetes entre los grupos de edad.")
+}
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+barplot(table(df$age, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre age y Diabetes", xlab="age", ylab="count")
+```
+
+#### Resultados
+
+El gráfico de barras muestra la prevalencia de diabetes en diferentes grupos de edad. Las barras representan el promedio de casos de diabetes en cada rango de edad, y claramente se observa un incremento en la prevalencia con la edad. El grupo de 70 años o más tiene la mayor prevalencia, seguido por el grupo de 51 a 70 años, 31 a 50 años, y finalmente el grupo de 30 años o menos con la prevalencia más baja.
+
+La interpretación de ANOVA confirma que estas diferencias son estadísticamente significativas (p \< 2e-16), lo que indica que la prevalencia de la diabetes varía considerablemente entre estos grupos de edad. Esto sugiere que la edad es un factor de riesgo importante para la diabetes, y que el riesgo aumenta con la edad.
+
+#### INTERPRETACIÓN
+
+La prevalencia de diabetes es más alta en las personas mayores y aumenta significativamente con la edad. Este hallazgo es consistente con lo que generalmente se conoce sobre la diabetes, que es más común en poblaciones de edad avanzada debido a factores como el aumento de la resistencia a la insulina y la disminución de la tolerancia a la glucosa que ocurren con el envejecimiento.
+
+### Analisis de hipótesis de Factores de Riesgo Combinados: ¿Cómo afectan los factores combinados, como el BMI, la edad y los niveles de glucosa en sangre, la probabilidad de tener diabetes?
+
+```{r}
+# HIPÓTESIS 4: Factores de riesgo combinados
+# Modelo de regresión con múltiples variables incluyendo bmi, edad, nivel de glucosa en sangre, hipertensión, enfermedad cardíaca, historial de fumar y nivel de HbA1c
+combined_risk_model <- glm(diabetes ~ bmi + age + blood_glucose_level + hypertension + heart_disease + smoking_history + HbA1c_level, data = diabetes_data, family = binomial)
+summary_combined_risk <- summary(combined_risk_model)
+print(summary_combined_risk)
+
+# Interpretación
+significant_vars <- names(which(summary_combined_risk$coefficients[, "Pr(>|z|)"] < 0.05))
+print(paste("Las siguientes variables son predictores significativos de la diabetes:", paste(significant_vars, collapse=", ")))
+```
+
+```{r}
+library(ggplot2)
+
+# Análisis de la relación entre BMI y Edad
+ggplot(df, aes(x = bmi, y = age, color = diabetes)) +
+  geom_point(size = 3) +
+  ggtitle("Relación entre BMI y Edad") +
+  theme_minimal()
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+barplot(table(df$blood_glucose_level, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre blood_glucose_level y Diabetes", xlab="blood_glucose_level", ylab="count")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'blood_glucose_level' y 'diabetes'
+ggplot(df, aes(x = diabetes, y = blood_glucose_level, color = factor(diabetes))) +
+  geom_point() +
+  labs(x = "diabetes", y = "blood_glucose_level", color = "Diabetes") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal()
+```
+
+#### Resultados modelo de regresion logistica con multiples variables
+
+-   BMI: El coeficiente positivo y significativo (p \< 2e-16) indica que un mayor BMI está asociado con un aumento en el riesgo de diabetes.
+
+-   Edad: Similar al BMI, un coeficiente positivo y significativo (p \< 2e-16) sugiere que a medida que aumenta la edad, también lo hace el riesgo de diabetes.
+
+-   Nivel de Glucosa en Sangre: Un coeficiente positivo y significativo (p \< 2e-16) sugiere que niveles más altos de glucosa en sangre están fuertemente asociados con un mayor riesgo de diabetes.
+
+-   Hipertensión: La hipertensión tiene un efecto significativo (p \< 2e-16) en el aumento del riesgo de diabetes.
+
+-   Enfermedad Cardíaca: Similar a la hipertensión, la presencia de enfermedad cardíaca también incrementa significativamente el riesgo de diabetes (p \< 2e-16).
+
+-   Historial de Fumar: Entre las categorías de fumadores, "nunca fumadores" y "sin información" muestran una asociación negativa significativa con el riesgo de diabetes (p \< 0.05 y p \< 2e-16, respectivamente). Esto indica que no fumar o la falta de información sobre el hábito de fumar se relacionan con un menor riesgo de diabetes en comparación con los fumadores actuales.
+
+-   Nivel de HbA1c: Un coeficiente muy positivo y significativo (p \< 2e-16) sugiere que niveles más altos de HbA1c están fuertemente asociados con un mayor riesgo de diabetes.
+
+#### INTERPRETACIÓN
+
+Este modelo indica que varios factores de riesgo combinados pueden predecir de manera efectiva el riesgo de diabetes. Factores como el BMI, la edad, los niveles de glucosa en sangre, la hipertensión, la enfermedad cardíaca y los niveles de HbA1c son predictores significativos del riesgo de diabetes. Además, el historial de fumar muestra una relación compleja con el riesgo de diabetes, donde no fumar parece ser protector contra la enfermedad.
+
+### Analisis de hipótesis de Diferencias de Género: ¿existen diferencias significativas en los factores de riesgo o en las tasas de diabetes entre los géneros?
+
+```{r}
+# HIPÓTESIS 5: Diferencias de género en la prevalencia de diabetes
+# Asegúrate de que los valores de 'gender' estén codificados adecuadamente (por ejemplo, "Male", "Female")
+
+# Modelo de regresión con género
+gender_model <- glm(diabetes ~ gender, data = diabetes_data, family = binomial)
+summary_gender <- summary(gender_model)
+print(summary_gender)
+
+# Interpretación
+if (summary_gender$coefficients["genderMale", "Pr(>|z|)"] < 0.05) {
+  interpretation_gender <- "Existe una diferencia significativa en el riesgo de diabetes entre géneros."
+} else {
+  interpretation_gender <- "No hay diferencias significativas en el riesgo de diabetes entre géneros."
+}
+print(interpretation_gender)
+
+# ANOVA para comparar la prevalencia de diabetes entre géneros
+# Nota: La ANOVA es más adecuada para variables dependientes continuas, mientras que el modelo binomial es más apropiado para respuestas binarias como la presencia/ausencia de diabetes.
+anova_gender <- aov(diabetes ~ gender, data = diabetes_data)
+print(summary(anova_gender))
+print("Interpretación ANOVA: Un p-valor bajo sugiere diferencias significativas en la prevalencia de diabetes entre hombres y mujeres.")
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'gender' y 'diabetes'
+barplot(table(df$gender, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre gender y Diabetes", xlab="gender", ylab="count")
+```
+
+#### Resultados
+
+Los resultados del modelo de regresión logística y el ANOVA sugieren que existen diferencias significativas en el riesgo de diabetes entre los géneros en el conjunto de datos
+
+#### Modelo de Regresión Logística:
+
+-   El coeficiente para genderMale es positivo y significativo (p-valor \< 2e-16), lo que indica que, en comparación con la categoría de referencia ( "Female"), ser hombre está asociado con un mayor riesgo de diabetes.
+-   El coeficiente para genderOther no es significativo (p-valor = 0.895), lo que sugiere que no hay suficiente evidencia para afirmar que el riesgo de diabetes en esta categoría es diferente de las mujeres. ANOVA:
+
+El p-valor muy bajo (\<2e-16) confirma que hay diferencias significativas en la prevalencia de diabetes entre los diferentes géneros.
+
+#### INTERPRETACIÓN
+
+Los resultados del modelo de regresión indican que los hombres tienen un mayor riesgo de diabetes en comparación con las mujeres en este conjunto de datos. La prueba ANOVA corrobora que estas diferencias entre géneros son estadísticamente significativas. Por lo tanto, según el análisis, los hombres tienen un mayor riesgo de desarrollar diabetes que las mujeres en el conjunto de datos.
+
+## PREGUNTAS DE INVESTIGACION
+
+### PREGUNTA DE INVESTIGACIÓN 1: ¿Cuál es la influencia de la hipertensión en la diabetes?
+
+```{r}
+# PREGUNTA DE INVESTIGACIÓN 1: ¿Cuál es la influencia de la hipertensión en la diabetes?
+# Evaluamos si la hipertensión es un predictor significativo de la diabetes.
+hypertension_model <- glm(diabetes ~ hypertension, data = diabetes_data, family = binomial)
+summary_hypertension <- summary(hypertension_model)
+print(summary_hypertension)
+# Interpretación: Los coeficientes significativos indicarían que la hipertensión contribuye al riesgo de diabetes.
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'hypertension' y 'diabetes'
+barplot(table(df$hypertension, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre Hypertension y Diabetes", xlab="hypertension (0: No, 1: Sí)", ylab="count")
+```
+
+#### Resultados modelo de regresión logistica
+
+La hipertensión como predictor de la diabetes indica que la variable hypertension es estadísticamente significativa, con un p-valor muy por debajo de 0.05. Esto sugiere que existe una fuerte asociación entre tener hipertensión y el riesgo de desarrollar diabetes.
+
+El coeficiente para la hypertensión es 1.64774, lo que implica que las personas con hipertensión tienen un mayor log-odds de tener diabetes en comparación con aquellas sin hipertensión. Dado el tamaño considerable del efecto, se puede inferir que la hipertensión es un factor de riesgo sustancial para la diabetes.
+
+#### Interpretación
+
+En cuanto a la comunicación de estos resultados, se puede afirmar que la hipertensión es un predictor significativo de la diabetes, lo que refuerza la necesidad de monitorear y gestionar la presión arterial como parte de la prevención y el manejo de la diabetes. Esta información es valiosa para los profesionales de la salud que buscan identificar a los individuos con alto riesgo de diabetes y puede influir en las recomendaciones para el cribado y la intervención temprana en personas con hipertensión.
+
+### PREGUNTA DE INVESTIGACIÓN 2: ¿Cuál es el impacto de la enfermedad cardíaca en la diabetes?
+
+```{r}
+# PREGUNTA DE INVESTIGACIÓN 2: ¿Cuál es el impacto de la enfermedad cardíaca en la diabetes?
+# Investigamos la asociación entre la enfermedad cardíaca y el riesgo de diabetes.
+heart_disease_model <- glm(diabetes ~ heart_disease, data = diabetes_data, family = binomial)
+summary_heart_disease <- summary(heart_disease_model)
+print(summary_heart_disease)
+# Interpretación: Un coeficiente significativo para la enfermedad cardíaca sugeriría un mayor riesgo de diabetes entre los pacientes con esta condición.
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'heart_disease' y 'diabetes'
+barplot(table(df$heart_disease, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre heart_disease y Diabetes", xlab="heart_disease (0: No, 1: Sí)", ylab="count")
+```
+
+#### Resultado modelo de regresión logistica para evaluar el impacto de la enfermedad cardíaca en el riesgo de desarrollar diabetes
+
+la presencia de enfermedad cardíaca (heart_disease) es un predictor significativo. El p-valor asociado con el coeficiente de la enfermedad cardíaca es mucho menor que 0.05, lo que indica que la relación es estadísticamente significativa.
+
+El coeficiente para heart_disease es de 1.76072, lo que implica que aquellos con enfermedad cardíaca tienen un log-odds significativamente mayor de tener diabetes en comparación con aquellos sin enfermedad cardíaca. La magnitud del efecto es considerable, y esto sugiere que hay una fuerte asociación entre la enfermedad cardíaca y el riesgo de diabetes.
+
+#### INTERPRETACIÓN
+
+Se podría decir lo siguiente: La enfermedad cardíaca es un factor de riesgo significativo para la diabetes, según lo demostrado por la fuerte asociación estadística en el análisis de regresión. Este hallazgo puede tener implicaciones clínicas importantes, ya que sugiere que los pacientes con enfermedad cardíaca deben ser considerados en alto riesgo de diabetes y podrían beneficiarse de estrategias preventivas y de monitoreo específicas. La relación entre estas dos condiciones subraya la importancia de un enfoque integrado en el manejo de pacientes con comorbilidades cardiovasculares y metabólicas.
+
+### PREGUNTA DE INVESTIGACIÓN 3: ¿Existe una relación entre el historial de fumar y la diabetes?
+
+```{r}
+# PREGUNTA DE INVESTIGACIÓN 3: ¿Existe una relación entre el historial de fumar y la diabetes?
+# Exploramos la correlación entre fumar y la incidencia de la diabetes.
+smoking_history_model <- glm(diabetes ~ smoking_history, data = diabetes_data, family = binomial)
+summary_smoking_history <- summary(smoking_history_model)
+print(summary_smoking_history)
+# Interpretación: Dependiendo de la significancia estadística, se podría inferir si fumar está asociado con un cambio en el riesgo de diabetes.
+```
+
+```{r}
+# Gráfico de barras para la relación entre 'smoking_history' y 'diabetes'
+barplot(table(df$smoking_history, df$diabetes), beside=TRUE, legend=TRUE, col=c("lightblue", "lightcoral"), main="Relación entre smoking_history y Diabetes", xlab="smoking_history", ylab="count")
+```
+
+#### Resultado del modelo de regresión logística que evalúa la relación entre el historial de fumar y la incidencia de la diabetes
+
+Hay una asociación significativa entre el hábito de fumar y el riesgo de desarrollar diabetes, aunque la dirección y la magnitud de esta asociación varían según la categoría específica del historial de fumar.
+
+El modelo muestra que, en comparación con aquellos que no tienen información sobre su hábito de fumar (smoking_historyNo Info), los fumadores actuales (smoking_historyever) y los exfumadores (smoking_historyformer) tienen un mayor riesgo de diabetes, con un incremento en el log-odds de tener diabetes (coeficientes positivos). Por otro lado, aquellos sin un historial de fumar (smoking_historynever) tienen un log-odds ligeramente menor de tener diabetes, aunque el p-valor es marginalmente significativo (p = 0.0505).
+
+#### INTERPRETACIÓN
+
+El análisis revela que fumar está asociado con un mayor riesgo de diabetes, con diferencias notables según el historial de fumar de los individuos. Específicamente, los exfumadores presentan un riesgo significativamente mayor en comparación con aquellos cuyo historial de fumar no está registrado. Curiosamente, aquellos que nunca han fumado también muestran un patrón ligeramente protector, aunque este resultado está en el límite de la significancia estadística. Estos hallazgos destacan la importancia de considerar el historial de fumar como un factor en la evaluación del riesgo de diabetes y podrían apoyar la implementación de programas de cesación del tabaco como parte de las estrategias de prevención de la diabetes.
+
+### PREGUNTA DE INVESTIGACIÓN 4: ¿Son los niveles de HbA1c predictores de diabetes?
+
+```{r}
+# PREGUNTA DE INVESTIGACIÓN 4: ¿Son los niveles de HbA1c predictores de diabetes?
+# Examinamos si los niveles de HbA1c son predictores significativos de diabetes.
+HbA1c_level_model <- glm(diabetes ~ HbA1c_level, data = diabetes_data, family = binomial)
+summary_HbA1c_level <- summary(HbA1c_level_model)
+print(summary_HbA1c_level)
+# Interpretación: Un p-valor bajo para el nivel de HbA1c confirmaría su papel como un indicador fuerte de la diabetes.
+```
+
+```{r}
+# Gráfico para la relación entre 'HbA1c_level' y 'diabetes'
+ggplot(df, aes(x = diabetes, y = HbA1c_level, color = factor(diabetes))) +
+  geom_point() +
+  labs(x = "diabetes", y = "HbA1c_level", color = "Diabetes") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal()
+```
+
+#### Resultados del modelo de regresión logística para la variable HbA1c_level
+
+Son muy indicativos de una relación fuerte y significativa con la variable objetivo diabetes. El coeficiente para HbA1c_level es positivo y significativo, con un p-valor mucho menor que el umbral estándar de 0.05, lo que indica que hay una fuerte evidencia en contra de la hipótesis nula de que no hay asociación entre los niveles de HbA1c y la presencia de diabetes.
+
+La interpretación de estos resultados es que los niveles de HbA1c son un predictor significativo de la presencia de diabetes. A medida que los niveles de HbA1c aumentan, también lo hace la probabilidad logarítmica de tener diabetes, lo que significa que los niveles de HbA1c pueden ser utilizados como un fuerte indicador para predecir la diabetes.
+
+#### INTERPRETACIÓN
+
+"El análisis estadístico confirma que los niveles de HbA1c son un predictor altamente significativo del diagnóstico de diabetes. Con un p-valor mucho menor que 0.05, esta variable muestra una de las asociaciones más fuertes con la diabetes en nuestro modelo. Esto refleja la importancia clínica de la HbA1c como una herramienta de diagnóstico para la diabetes y subraya su relevancia en la evaluación del control glucémico a largo plazo en pacientes. Los hallazgos sugieren que la inclusión de los niveles de HbA1c en los protocolos de evaluación de riesgos puede mejorar significativamente la identificación de individuos en riesgo de desarrollar diabetes."
+
+## COMUNICACIÓN DE RESULTADOS
+
+### Análisis de Datos e Interpretaciones
+
+El análisis involucra modelos de regresión logística para evaluar la relación entre las variables independientes y la diabetes. Los hallazgos clave indicaron:
+
+### Interacción entre BMI y Edad:
+
+-   Hallazgo: Existe una interacción significativa entre BMI y edad en la predicción de diabetes.
+-   Interpretación: Esto indica que el impacto del BMI en el riesgo de diabetes varía con la edad. En otras palabras, el riesgo asociado con un BMI elevado podría ser diferente en jóvenes comparado con adultos mayores.
+
+### Relevancia de la Glucosa en Sangre:
+
+-   Hallazgo: Los niveles de glucosa en sangre son un predictor significativo de la diabetes.
+-   Interpretación: La glucosa en sangre es un indicador más fuerte para predecir la diabetes que el BMI solo. Esto subraya la importancia de monitorear los niveles de glucosa en intervenciones preventivas.
+
+### Variaciones por Grupos de Edad:
+
+-   Hallazgo: Existen diferencias significativas en la prevalencia de diabetes entre diferentes grupos de edad.
+-   Interpretación: Los individuos mayores tienen una prevalencia más alta de diabetes, lo que sugiere que la edad es un factor de riesgo importante.
+
+### Factores de Riesgo Combinados:
+
+-   Hallazgo: Varios factores como BMI, edad, glucosa en sangre, hipertensión, enfermedad cardíaca y niveles de HbA1c son predictores significativos de la diabetes.
+-   Interpretación: La combinación de estos factores aumenta la precisión del modelo predictivo, lo que indica que la diabetes es una enfermedad multifactorial.
+
+### Diferencias de Género:
+
+-   Hallazgo: Hay diferencias significativas en el riesgo de diabetes entre géneros.
+-   Interpretación: Los hombres tienen un riesgo ligeramente mayor de desarrollar diabetes en comparación con las mujeres, lo que puede deberse a diferencias biológicas y de estilo de vida.
+
+### Preguntas de Investigación Específicas
+
+#### Influencia de la Hipertensión:
+
+-   Hallazgo: La hipertensión es un predictor significativo de diabetes.
+-   Interpretación: Las personas con hipertensión tienen un riesgo mayor de desarrollar diabetes, lo que sugiere una posible relación fisiológica entre ambas condiciones.
+
+#### Impacto de la Enfermedad Cardíaca:
+
+-   Hallazgo: La enfermedad cardíaca está asociada con un riesgo aumentado de diabetes.
+-   Interpretación: Este hallazgo refuerza la idea de que las enfermedades cardiovasculares y la diabetes pueden compartir factores de riesgo comunes.
+
+#### Relación con el Historial de Fumar:
+
+-   Hallazgo: Fumar tiene una asociación compleja con el riesgo de diabetes.
+-   Interpretación: Aunque fumar en general no mostró un patrón claro, ciertos tipos de historiales de fumar (como "nunca fumadores" y "sin información") presentaron asociaciones significativas, lo que sugiere que el efecto del tabaquismo en la diabetes podría ser más matizado de lo previamente pensado.
+
+#### Predicción con Niveles de HbA1c:
+
+-   Hallazgo: Los niveles de HbA1c son un fuerte predictor de diabetes.
+-   Interpretación: Dado que HbA1c refleja el control glucémico a largo plazo, su relación con la diabetes es robusta y podría ser utilizada para identificar individuos en riesgo.
+
+## 4. Preparar los datos para los algoritmos de Machine Learning
+
+Para mayor informacion de esta seccion, favor de dirigirse al archivo formato Quarto: "Proyecto NoCountry - Diabetes - R_Python", o tambien al archivo: "Proyecto NoCountry - Diabetes - Python", en donde estan descritos de forma detallada, cada uno de los codigos implementados, asi como sus interpretaciones y resultados.
+
+## 5. Seleccionar un modelo y realizar el entrenamiento (train).
+
+Para mayor informacion de esta seccion, favor de dirigirse al archivo formato Quarto: "Proyecto NoCountry - Diabetes - R_Python", o tambien al archivo: "Proyecto NoCountry - Diabetes - Python", en donde estan descritos de forma detallada, cada uno de los codigos implementados, asi como sus interpretaciones y resultados.
+
+## 6. Seleccionar un modelo y realizar el entrenamiento (train) con ajuste de hiperparámetros
+
+Para mayor informacion de esta seccion, favor de dirigirse al archivo formato Quarto: "Proyecto NoCountry - Diabetes - R_Python", o tambien al archivo: "Proyecto NoCountry - Diabetes - Python", en donde estan descritos de forma detallada, cada uno de los codigos implementados, asi como sus interpretaciones y resultados.
+
+## 7. Presentación de la solución
+
+A continuación presentamos un resumen de los resultados obtenidos despues del analisis de datos a traves de algoritmos de Machine Learning:
+
+![](images/Tabla_Machine_Learning.png)
+
+Basándonos en los resultados de las pruebas de diferentes modelos de aprendizaje automático, la tarea de clasificar pacientes con diabetes presenta desafíos específicos que deben ser cuidadosamente evaluados en términos de precisión, sensibilidad y especificidad.
+
+Podemos concluir que tanto "Decision Tree" como "Random Forest" han demostrado un rendimiento excepcionalmente alto en la tarea de clasificación. Ambos modelos superaron el 97% de precisión, lo que sugiere una capacidad robusta para generalizar patrones en los datos, parecen ser candidatos sólidos para la clasificación de pacientes diabéticos. Además, ambos modelos exhiben alta especificidad, superando el 99.9%, lo que sugiere su capacidad para identificar correctamente a los pacientes no diabéticos. Sin embargo, la sensibilidad de ambos modelos es del 68.21%, lo que indica que pueden haber falsos negativos, es decir, casos de pacientes diabéticos que podrían no ser identificados.
+
+Por otro lado, el "Support Vector Machine (SVM)" también mostró un rendimiento respetable con una precisión del 96.62% y una especificidad del 99.86%. Aunque su sensibilidad es más baja en comparación con los modelos de "Árboles de decisión" y "Random Forest", sigue siendo aceptable para la detección de pacientes diabéticos.
+
+En el caso de "Logistic Regression", aunque presenta una precisión ligeramente inferior del 95.90%, sigue siendo una opción viable ya que mantiene una sensibilidad y especificidad razonables del 61.71% y 99.09%, respectivamente.
+
+## 8. Conclusiones Finales
+
+R y Python ofrecieron herramientas interactivas y notebooks (como R Markdown en R y Jupyter Notebooks en Python) que facilitaron la exploración de datos, la experimentación y la documentación de los análisis. Estas herramientas fomentaron la reproducibilidad y la transparencia en esta investigación.
+
+R fue particularmente fuerte en el análisis exploratorio de datos (EDA), proporcionando una amplia gama de herramientas y técnicas para visualizar y explorar los datos de manera efectiva. librerías como ggplot2 ofrecieron una gran flexibilidad y capacidad para crear visualizaciones de alta calidad. Por su parte Python fue particularmente fuerte en la parte de Machine Learning, con librerías como scikit-learn resulto muy eficiente el modelado y entrenamiento de algoritmos de clasificación.
+
+La exploracion análisis y procesamiento de datos también es clave, ya que se pueden hacer mejoras descartando datos atipicos, y si algunas variables lo permiten , aplicar transformaciones para buscar la normalidad de las distribuciones. Con base en nuestro análisis, las variables mas relacionadas con el riesgo de diabetes son blood_glucose_level, bmi y age.
+
+En general, la elección entre estos modelos también dependerá de factores adicionales, como la interpretabilidad del modelo, la complejidad computacional, la disponibilidad de datos y la tolerancia a falsos positivos o falsos negativos en el contexto específico de la aplicación médica. Además, es importante realizar una validación adicional y considerar la sensibilidad y especificidad del modelo en el contexto clínico para asegurar su aplicabilidad y confiabilidad en la clasificación de pacientes con diabetes.
+
+En muchos casos, hay un trade-off entre precisión y sensibilidad. Ajustar el umbral de clasificación puede afectar estos dos valores de manera inversa. Por ejemplo, al disminuir el umbral, es posible aumentar la sensibilidad a costa de la precisión y viceversa. En el contexto de la detección de diabetes, el equilibrio óptimo dependerá de las consecuencias prácticas y clínicas de los falsos positivos y falsos negativos.
