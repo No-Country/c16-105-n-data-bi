@@ -31,6 +31,14 @@ Desarrollo de un Dashboard en donde se pueda visualizar de manera grafica e inte
 
     
 ----
+
+Dashboard de Power BI del proyecto: 
+https://app.powerbi.com/view?r=eyJrIjoiY2RiNGUxYjgtZmI3NC00MDJkLTk2MmYtNTE3Mjc3ZWFlZGFhIiwidCI6ImY5NGJmNGQ5LTgwOTctNDc5NC1hZGY2LWE1NDY2Y2EyODU2MyIsImMiOjR9
+
+Informe Web del proyecto:
+https://prediccion-de-diabetes.vercel.app/
+
+----
   
 <h3 align="center">EQUIPO</h3>
 
